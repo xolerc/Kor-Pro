@@ -1,0 +1,60 @@
+name: Build APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Bubblewrap
+        run: npm install -g @bubblewrap/cli
+
+      - name: Initialize Bubblewrap
+        working-directory: /tmp
+        run: |
+          bubblewrap init --manifest=https://xolericuz.github.io/Kor-Pro/manifest.json \
+            --directory=./kodpro-app \
+            --appVersionName="1.0.0" \
+            --appVersionCode=1
+
+      - name: Build APK
+        working-directory: /tmp/kodpro-app
+        run: bubblewrap build
+
+      - name: Copy APK to repo
+        run: |
+          cp /tmp/kodpro-app/app/build/outputs/apk/release/app-release-unsigned.apk ./kod-pro.apk || \
+          cp /tmp/kodpro-app/app-release.apk ./kod-pro.apk || true
+
+      - name: Commit APK
+        run: |
+          if [ -f kod-pro.apk ]; then
+            git add kod-pro.apk
+            git config user.name "APK Builder"
+            git config user.email "apk@xoleric.uz"
+            git commit -m "add apk" || true
+            git push
+          fi
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kod-pro-apk
+          path: kod-pro.apk
