@@ -32,15 +32,14 @@ jobs:
         run: |
           npm init -y
           npm install @capacitor/core @capacitor/android @capacitor/cli
+          mkdir -p www
+          echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0;url=https://xolericuz.github.io/Kor-Pro/"></head><body>Loading...</body></html>' > www/index.html
           cat > capacitor.config.json << 'CAPEOF'
           {
             "appId": "uz.xoleric.kodpro",
             "appName": "KOD PRO",
-            "webDir": ".",
-            "server": {
-              "url": "https://xolericuz.github.io/Kor-Pro/",
-              "cleartext": true
-            }
+            "webDir": "www",
+            "bundledWebRuntime": false
           }
           CAPEOF
           npx cap add android
