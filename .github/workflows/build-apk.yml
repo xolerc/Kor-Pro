@@ -29,14 +29,17 @@ jobs:
       - name: Initialize Bubblewrap
         working-directory: /tmp
         run: |
-          bubblewrap init --manifest=https://xolericuz.github.io/Kor-Pro/manifest.json \
+          echo "no" | bubblewrap init \
+            --manifest=https://xolericuz.github.io/Kor-Pro/manifest.json \
             --directory=./kodpro-app \
             --appVersionName="1.0.0" \
-            --appVersionCode=1
+            --appVersionCode=1 \
+            --jdk=no \
+            --sign
 
       - name: Build APK
         working-directory: /tmp/kodpro-app
-        run: bubblewrap build
+        run: bubblewrap build --skipSigning
 
       - name: Copy APK to repo
         run: |
