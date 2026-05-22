@@ -1,0 +1,23 @@
+{
+  "name": "KOD PRO",
+  "short_name": "KOD PRO",
+  "description": "Professional kod muharriri — brauzerda to'liq HTML/CSS/JS sandbox",
+  "start_url": "/Kor-Pro/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#FFDE02",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

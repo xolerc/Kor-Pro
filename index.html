@@ -1,434 +1,98 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0a0a0a">
-    <title>WebCode Pro</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-primary: #0a0a0a;
-            --bg-secondary: #111111;
-            --bg-tertiary: #1a1a1a;
-            --border-color: #1f1f1f;
-            --text-primary: #e5e5e5;
-            --text-secondary: #a1a1aa;
-            --text-muted: #71717a;
-            --accent: #d946ef;
-            --accent-light: #ec4899;
-            --success: #22c55e;
-            --error: #ef4444;
-            --dot-red: #ff5f57;
-            --dot-yellow: #febc2e;
-            --dot-green: #28ca41;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* Splash Screen */
-        #splash {
-            position: fixed;
-            inset: 0;
-            background: var(--bg-primary);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease;
-        }
-
-        #splash.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .logo {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, var(--accent), var(--accent-light));
-            border-radius: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            font-weight: 700;
-            margin-bottom: 32px;
-            box-shadow: 0 0 60px rgba(217, 70, 239, 0.3);
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .title {
-            font-size: 24px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            margin-bottom: 8px;
-        }
-
-        .subtitle {
-            font-size: 12px;
-            color: var(--text-muted);
-            letter-spacing: 4px;
-            margin-bottom: 40px;
-        }
-
-        .start-btn {
-            padding: 14px 40px;
-            background: linear-gradient(135deg, var(--accent), var(--accent-light));
-            border: none;
-            border-radius: 12px;
-            color: #fff;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .start-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(217, 70, 239, 0.4);
-        }
-
-        /* Main App */
-        #app {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.5s ease;
-        }
-
-        #app.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        /* Header */
-        .header {
-            height: 50px;
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 16px;
-            -webkit-app-region: drag;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            -webkit-app-region: no-drag;
-        }
-
-        .dots {
-            display: flex;
-            gap: 8px;
-        }
-
-        .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-            transition: transform 0.15s;
-        }
-
-        .dot:hover { transform: scale(1.2); }
-        .dot.red { background: var(--dot-red); }
-        .dot.yellow { background: var(--dot-yellow); }
-        .dot.green { background: var(--dot-green); }
-
-        .brand {
-            font-size: 13px;
-            font-weight: 600;
-            letter-spacing: 1px;
-        }
-
-        .brand span { color: var(--accent); }
-
-        /* Workspace */
-        .workspace {
-            flex: 1;
-            display: flex;
-            gap: 1px;
-            background: var(--border-color);
-        }
-
-        .panel {
-            flex: 1;
-            background: var(--bg-secondary);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .panel-header {
-            height: 36px;
-            background: var(--bg-tertiary);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 12px;
-        }
-
-        .panel-title {
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            color: var(--text-muted);
-        }
-
-        .editor-area {
-            flex: 1;
-            display: flex;
-            overflow: hidden;
-        }
-
-        .line-numbers {
-            width: 45px;
-            background: var(--bg-tertiary);
-            color: var(--text-muted);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
-            line-height: 1.6;
-            padding: 12px 8px;
-            text-align: right;
-            overflow: hidden;
-            user-select: none;
-            border-right: 1px solid var(--border-color);
-        }
-
-        .code-input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: #4ade80;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
-            line-height: 1.6;
-            padding: 12px;
-            resize: none;
-            outline: none;
-            overflow: auto;
-            caret-color: var(--accent);
-        }
-
-        .preview {
-            flex: 1;
-            background: #fff;
-            border: none;
-        }
-
-        /* Status Bar */
-        .status {
-            height: 28px;
-            background: var(--bg-tertiary);
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 12px;
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-
-        .status-left, .status-right {
-            display: flex;
-            gap: 16px;
-        }
-
-        /* Toast */
-        #toast {
-            position: fixed;
-            bottom: 60px;
-            left: 50%;
-            transform: translateX(-50%) translateY(20px);
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 13px;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s;
-            z-index: 1000;
-        }
-
-        #toast.visible {
-            opacity: 1;
-            visibility: visible;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #52525b; }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .workspace { flex-direction: column; }
-            .panel:first-child { height: 50%; }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0a0a0a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon-192.png" />
+  <title>KOD PRO</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <!-- Splash -->
-    <div id="splash">
-        <div class="logo">X</div>
-        <div class="title">WEBCODE <span style="color:var(--accent)">PRO</span></div>
-        <div class="subtitle">KOD MUHARRIRI</div>
-        <button class="start-btn" onclick="startApp()">IShlga tushirish</button>
+  <div id="app">
+    <header>
+      <div class="header-left">
+        <span class="logo">KOD</span><span class="logo-accent">PRO</span>
+      </div>
+      <div class="header-center">
+        <span class="status-dot" id="statusDot"></span>
+        <span class="status-text" id="statusText">tayyor</span>
+      </div>
+      <div class="header-right">
+        <button id="installBtn" class="icon-btn" title="O'rnatish" hidden>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="tabs-bar" id="editorTabs">
+      <button class="tab active" data-tab="html">HTML</button>
+      <button class="tab" data-tab="css">CSS</button>
+      <button class="tab" data-tab="js">JS</button>
     </div>
 
-    <!-- Main App -->
-    <div id="app">
-        <header class="header">
-            <div class="header-left">
-                <div class="dots">
-                    <button class="dot red" onclick="clearCode()" title="Tozalash"></button>
-                    <button class="dot yellow" onclick="copyCode()" title="Nusxalash"></button>
-                    <button class="dot green" onclick="fullscreen()" title="To'liq ekran"></button>
-                </div>
-                <div class="brand">WEB<span>CODE</span></div>
-            </div>
-            <button style="background:transparent;border:none;color:var(--text-muted);cursor:pointer;font-size:18px"
-                onclick="toggleMenu()">☰</button>
-        </header>
-
-        <div class="workspace">
-            <!-- Editor Panel -->
-            <div class="panel">
-                <div class="panel-header">
-                    <span class="panel-title">KOD</span>
-                </div>
-                <div class="editor-area">
-                    <div class="line-numbers" id="lines">1</div>
-                    <textarea class="code-input" id="code" spellcheck="false" 
-                        placeholder="<html>&#10;  <body>&#10;    <h1>Salom!</h1>&#10;  </body>&#10;</html>"
-                        oninput="update()" onscroll="syncScroll()"></textarea>
-                </div>
-            </div>
-
-            <!-- Preview Panel -->
-            <div class="panel">
-                <div class="panel-header">
-                    <span class="panel-title">NATIJA</span>
-                </div>
-                <iframe class="preview" id="preview" sandbox="allow-scripts"></iframe>
-            </div>
-        </div>
-
-        <!-- Status Bar -->
-        <div class="status">
-            <div class="status-left">
-                <span id="status-text">Tayyor</span>
-            </div>
-            <div class="status-right">
-                <span id="size">0 KB</span>
-                <span>UTF-8</span>
-            </div>
-        </div>
+    <div class="editor-wrap">
+      <div class="line-numbers" id="lineNumbers">1</div>
+      <textarea id="editor" class="editor" spellcheck="false" autocomplete="off" wrap="off"></textarea>
     </div>
 
-    <!-- Toast -->
-    <div id="toast"></div>
+    <div class="output-tabs-bar">
+      <button class="output-tab active" data-otab="preview">PREVIEW</button>
+      <button class="output-tab" data-otab="console">CONSOLE</button>
+    </div>
 
-    <script>
-        const splash = document.getElementById('splash');
-        const app = document.getElementById('app');
-        const code = document.getElementById('code');
-        const lines = document.getElementById('lines');
-        const preview = document.getElementById('preview');
-        const size = document.getElementById('size');
-        const statusText = document.getElementById('status-text');
-        const toast = document.getElementById('toast');
+    <div class="output-area">
+      <iframe id="preview" class="preview"></iframe>
+      <div id="console" class="console hidden"></div>
+    </div>
 
-        let timer;
+    <div class="action-bar">
+      <div class="action-group">
+        <button id="templatesBtn" class="action-btn" title="Template">&#128196;</button>
+        <button id="runBtn" class="action-btn primary" title="Ishga tushirish">&#9654;</button>
+      </div>
+      <div class="action-group">
+        <button id="exportBtn" class="action-btn" title="Eksport">&#128228;</button>
+        <button id="copyBtn" class="action-btn" title="Nusxalash">&#128203;</button>
+        <button id="clearBtn" class="action-btn" title="Tozalash">&#128465;</button>
+      </div>
+    </div>
 
-        function startApp() {
-            splash.classList.add('hidden');
-            app.classList.add('visible');
-            update();
-            fullscreen();
-            showToast('Muharrir tayyor!');
-        }
+    <div class="bottom-nav">
+      <button class="nav-btn active" data-view="editor">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        <span>Muharrir</span>
+      </button>
+      <button class="nav-btn" data-view="preview">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <span>Natija</span>
+      </button>
+      <button class="nav-btn" data-view="console">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+        <span>Konsol</span>
+      </button>
+    </div>
 
-        function update() {
-            // Line numbers
-            const count = code.value.split('\n').length;
-            lines.textContent = Array.from({length: count}, (_, i) => i + 1).join('\n');
+    <div class="status-bar">
+      <span id="cursorPos">Ln 1, Col 1</span>
+      <span id="fileSize">0 B</span>
+    </div>
+  </div>
 
-            // Preview
-            clearTimeout(timer);
-            timer = setTimeout(() => {
-                preview.srcdoc = code.value;
-            }, 500);
+  <div id="templateModal" class="modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>TEMPLATELAR</h3>
+        <button id="closeModal" class="icon-btn">&times;</button>
+      </div>
+      <div class="modal-body" id="templateList"></div>
+    </div>
+  </div>
 
-            // Size
-            const bytes = new Blob([code.value]).size;
-            size.textContent = (bytes / 1024).toFixed(1) + ' KB';
-        }
-
-        function syncScroll() {
-            lines.scrollTop = code.scrollTop;
-        }
-
-        function clearCode() {
-            code.value = '';
-            update();
-            showToast('Kod tozalandi');
-        }
-
-        function copyCode() {
-            code.select();
-            document.execCommand('copy');
-            showToast('Kod nusxalandi');
-        }
-
-        function fullscreen() {
-            const el = document.documentElement;
-            if (el.requestFullscreen) el.requestFullscreen().catch(()=>{});
-            else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-        }
-
-        function showToast(msg) {
-            toast.textContent = msg;
-            toast.classList.add('visible');
-            setTimeout(() => toast.classList.remove('visible'), 2000);
-        }
-
-        // Prevent back
-        history.pushState(null, null, location.href);
-        window.onpopstate = () => {
-            history.pushState(null, null, location.href);
-        };
-    </script>
+  <script src="app.js"></script>
 </body>
 </html>
