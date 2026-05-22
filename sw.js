@@ -1,5 +1,9 @@
 const CACHE = 'kod-pro-v1';
-const URLS = ['/', '/index.html', '/style.css', '/app.js', '/manifest.json', '/icon-192.png', '/icon-512.png'];
+const URLS = [
+  '/Kor-Pro/', '/Kor-Pro/index.html', '/Kor-Pro/style.css',
+  '/Kor-Pro/app.js', '/Kor-Pro/manifest.json',
+  '/Kor-Pro/icon-192.png', '/Kor-Pro/icon-512.png'
+];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(URLS)));
