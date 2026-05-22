@@ -28,46 +28,38 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Create Capacitor Android project
+      - name: Create & Build Android App
         run: |
           npm init -y
-          npm install @capacitor/core @capacitor/android @capacitor/cli
+          npm install @capacitor/core@6 @capacitor/android@6 @capacitor/cli@6
           mkdir -p www
-          echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0;url=https://xolericuz.github.io/Kor-Pro/"></head><body>Loading...</body></html>' > www/index.html
+          cat > www/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html><head>
+          <meta http-equiv="refresh" content="0;url=https://xolericuz.github.io/Kor-Pro/">
+          <meta name="viewport" content="width=device-width,initial-scale=1.0">
+          </head><body>Loading KOD PRO...</body></html>
+          EOF
           cat > capacitor.config.json << 'CAPEOF'
-          {
-            "appId": "uz.xoleric.kodpro",
-            "appName": "KOD PRO",
-            "webDir": "www",
-            "bundledWebRuntime": false
-          }
+          {"appId":"uz.xoleric.kodpro","appName":"KOD PRO","webDir":"www","bundledWebRuntime":false}
           CAPEOF
           npx cap add android
 
-      - name: Build APK
+      - name: Build Debug APK
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleRelease
+          export ANDROID_HOME=/usr/local/lib/android/sdk
+          export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
+          ./gradlew assembleDebug --no-daemon 2>&1 | tail -30
 
-      - name: Find APK
+      - name: Locate APK
         run: |
-          find android -name "*.apk" -type f
-          cp android/app/build/outputs/apk/release/app-release-unsigned.apk ./kod-pro.apk 2>/dev/null || \
-          cp android/app/build/outputs/apk/debug/app-debug.apk ./kod-pro.apk 2>/dev/null || true
+          find /home/runner/work/Kor-Pro/Kor-Pro -name "*.apk" -type f 2>/dev/null || \
+          find . -name "*.apk" -type f 2>/dev/null
 
-      - name: Commit APK
-        run: |
-          if [ -f kod-pro.apk ] && [ -s kod-pro.apk ]; then
-            git add kod-pro.apk
-            git config user.name "APK Builder"
-            git config user.email "apk@xoleric.uz"
-            git commit -m "add apk" || true
-            git push
-          fi
-
-      - name: Upload APK artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: kod-pro-apk
-          path: kod-pro.apk
+          path: "**/*.apk"
