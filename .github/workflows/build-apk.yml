@@ -20,35 +20,36 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install Bubblewrap
-        run: npm install -g @bubblewrap/cli
-
-      - name: Initialize Bubblewrap
-        working-directory: /tmp
+      - name: Create Capacitor Android project
         run: |
-          echo "no" | bubblewrap init \
-            --manifest=https://xolericuz.github.io/Kor-Pro/manifest.json \
-            --directory=./kodpro-app \
-            --appVersionName="1.0.0" \
-            --appVersionCode=1 \
-            --jdk=no \
-            --sign
+          npm init -y
+          npm install @capacitor/core @capacitor/android @capacitor/cli
+          npx cap init KODPRO uz.xoleric.kodpro --webDir=.
+          npx cap add android
 
       - name: Build APK
-        working-directory: /tmp/kodpro-app
-        run: bubblewrap build --skipSigning
-
-      - name: Copy APK to repo
         run: |
-          cp /tmp/kodpro-app/app/build/outputs/apk/release/app-release-unsigned.apk ./kod-pro.apk || \
-          cp /tmp/kodpro-app/app-release.apk ./kod-pro.apk || true
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease
+
+      - name: Find APK
+        run: |
+          find android -name "*.apk" -type f
+          cp android/app/build/outputs/apk/release/app-release-unsigned.apk ./kod-pro.apk 2>/dev/null || \
+          cp android/app/build/outputs/apk/debug/app-debug.apk ./kod-pro.apk 2>/dev/null || true
 
       - name: Commit APK
         run: |
-          if [ -f kod-pro.apk ]; then
+          if [ -f kod-pro.apk ] && [ -s kod-pro.apk ]; then
             git add kod-pro.apk
             git config user.name "APK Builder"
             git config user.email "apk@xoleric.uz"
