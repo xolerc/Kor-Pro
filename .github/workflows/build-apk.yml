@@ -32,7 +32,17 @@ jobs:
         run: |
           npm init -y
           npm install @capacitor/core @capacitor/android @capacitor/cli
-          npx cap init KODPRO uz.xoleric.kodpro --webDir=.
+          cat > capacitor.config.json << 'CAPEOF'
+          {
+            "appId": "uz.xoleric.kodpro",
+            "appName": "KOD PRO",
+            "webDir": ".",
+            "server": {
+              "url": "https://xolericuz.github.io/Kor-Pro/",
+              "cleartext": true
+            }
+          }
+          CAPEOF
           npx cap add android
 
       - name: Build APK
