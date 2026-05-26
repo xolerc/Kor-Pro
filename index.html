@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal HTML Live Viewer</title>
+    <style>
+        /* Yumshoq va yoqimli shrift sozlamalari */
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0a0a0c;
+            color: #f4f4f5;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Yuqori boshqaruv paneli */
+        .top-panel {
+            background-color: #121215;
+            border-bottom: 1px solid #222227;
+            padding: 12px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #a1a1aa;
+            letter-spacing: 0.5px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Estetik yashil tugmalar */
+        .btn {
+            background-color: #10b981;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn:hover {
+            background-color: #059669;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-clear {
+            background-color: #1e293b;
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-clear:hover {
+            background-color: rgba(16, 185, 129, 0.1);
+        }
+
+        /* Kichik kod kiritish maydoni */
+        .editor-wrapper {
+            position: relative;
+        }
+
+        textarea {
+            width: 100%;
+            height: 130px; /* Ixcham o'lcham */
+            background-color: #18181c;
+            color: #e4e4e7;
+            border: 1px solid #27272a;
+            border-radius: 12px;
+            padding: 14px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        textarea:focus {
+            border-color: #10b981;
+        }
+
+        /* Natija ko'rinadigan qism (Qolgan barcha joy) */
+        .preview-container {
+            flex: 1;
+            background-color: #ffffff;
+            position: relative;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background-color: #ffffff;
+        }
+
+        /* To'liq ekran rejimi uchun maxsus vizual moslashuv */
+        :-webkit-full-screen iframe { width: 100vw; height: 100vh; }
+        :-moz-full-screen iframe { width: 100vw; height: 100vh; }
+        :fullscreen iframe { width: 100vw; height: 100vh; }
+    </style>
+</head>
+<body>
+
+    <!-- Yuqoridagi kichik kod paneli -->
+    <div class="top-panel">
+        <div class="panel-header">
+            <div class="panel-title">HTML Live Sandbox</div>
+            <div class="actions">
+                <button class="btn btn-clear" id="clearBtn">Tozalash ✕</button>
+                <button class="btn" id="fullscreenBtn">To'liq ekran ⛶</button>
+            </div>
+        </div>
+        <div class="editor-wrapper">
+            <textarea id="editor" placeholder="Kodingizni bu yerga joylashtiring (HTML, CSS, JS)..." spellcheck="false" autocomplete="off"></textarea>
+        </div>
+    </div>
+
+    <!-- Pastki qism: To'liq natija maydoni -->
+    <div class="preview-container" id="previewContainer">
+        <iframe id="preview"></iframe>
+    </div>
+
+    <script>
+        const editor = document.getElementById('editor');
+        const preview = document.getElementById('preview');
+        const clearBtn = document.getElementById('clearBtn');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const previewContainer = document.getElementById('previewContainer');
+
+        // Jonli natijani ko'rsatish funksiyasi
+        function renderOutput() {
+            const code = editor.value;
+            const documentTarget = preview.contentWindow.document;
+            
+            documentTarget.open();
+            documentTarget.write(code);
+            documentTarget.close();
+        }
+
+        // Matn kiritilishi yoki joylanishi (paste) bilan ishlaydi
+        editor.addEventListener('input', renderOutput);
+
+        // Kodni tozalash (X) tugmasi
+        clearBtn.addEventListener('click', () => {
+            editor.value = ''; // Matnni o'chirish
+            renderOutput();    // Natijani ham tozalash
+            editor.focus();    // Kursorni yana kiritish maydoniga qaytarish
+        });
+
+        // Natijani to'liq ekranda ko'rish
+        fullscreenBtn.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                previewContainer.requestFullscreen().catch(err => {
+                    alert(`To'liq ekranga o'tishda xatolik: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        });
+
+        // Ekran rejimi o'zgarganda tugma matnini yangilash (Esc bosilganda ham moslashadi)
+        document.addEventListener('fullscreenchange', () => {
+            if (document.fullscreenElement) {
+                fullscreenBtn.textContent = "Kichraytirish ✕";
+            } else {
+                fullscreenBtn.textContent = "To'liq ekran ⛶";
+            }
+        });
+    </script>
+</body>
+</html>
