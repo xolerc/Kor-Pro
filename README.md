@@ -31,3 +31,6 @@ python3 -m http.server 8080
 ```
 
 Fully client-side, no build step required.
+
+## 🔗 Rasmiy portfolio
+Barcha XOLERIC loyihalari: **https://xolerc.github.io/mydrime/**
